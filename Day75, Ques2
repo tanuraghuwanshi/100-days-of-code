@@ -1,0 +1,38 @@
+// There is an undirected graph with n nodes, where each node is numbered between 0 and n - 1. You are given a 2D array graph, where graph[u] is an array of nodes that node u is adjacent to. More formally, for each v in graph[u], there is an undirected edge between node u and node v. The graph has the following properties:
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+bool isBipartite(int** graph, int graphSize, int* graphColSize) {
+    int color[100];
+    memset(color, -1, sizeof(color));  // -1 = unvisited
+
+    int queue[100];
+
+    for (int start = 0; start < graphSize; start++) {
+        if (color[start] != -1) continue;  // already colored
+
+        // BFS from this component's start node
+        int head = 0, tail = 0;
+        queue[tail++] = start;
+        color[start] = 0;              // color 0 = set A
+
+        while (head < tail) {
+            int node = queue[head++];
+
+            for (int i = 0; i < graphColSize[node]; i++) {
+                int nb = graph[node][i];
+
+                if (color[nb] == -1) {
+                    color[nb] = 1 - color[node]; // flip color
+                    queue[tail++] = nb;
+                } else if (color[nb] == color[node]) {
+                    return false;      // conflict → not bipartite
+                }
+            }
+        }
+    }
+    return true;
+}
+
